@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "./index.css";
-import * as serviceWorker from "./serviceWorker";
+import "semantic-ui-css/semantic.min.css";
+import "semantic-ui-css/themes/default/assets/images/";
 import App from "./components/App";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -20,4 +20,3 @@ const Root = () => {
 };
 
 ReactDOM.render(<Root />, document.getElementById("root"));
-serviceWorker.unregister();

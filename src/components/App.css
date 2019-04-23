@@ -1,0 +1,10 @@
+html,
+body,
+.app {
+	height: 100vh;
+	background-color: #282828;
+	padding: 1em;
+	position: relative;
+	overflow-x: hidden;
+	color: #fcfcfc;
+}
