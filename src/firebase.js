@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import Firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
@@ -12,6 +12,6 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGE_SENDER_ID
 };
-const DB = firebase.initializeApp(firebaseConfig);
+const firebase = Firebase.initializeApp(firebaseConfig);
 
-export default DB;
+export default firebase;

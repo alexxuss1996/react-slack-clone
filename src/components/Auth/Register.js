@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import DB from "../../db";
+import md5 from "md5";
+import firebase from "../../firebase";
 
 export default class Register extends Component {
   state = {
@@ -10,7 +11,8 @@ export default class Register extends Component {
     password: "",
     passwordConfirmation: "",
     errors: [],
-    loading: false
+    loading: false,
+    usersRef: firebase.database().ref("users")
   };
 
   isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
@@ -43,11 +45,18 @@ export default class Register extends Component {
     }
   };
 
-  displayErrors = errors => errors.map((error, index) => <p key={Math.random(index)}>{error.message}</p>);
+  saveUser = ({ user }) => {
+    return this.state.usersRef.child(user.uid).set({
+      name: user.displayName,
+      avatar: user.photoURL
+    });
+  };
 
   handleInputError = (errors, inputName) => {
     return errors.some(error => error.message.toLowerCase().includes(inputName)) ? "error" : "";
   };
+
+  displayErrors = errors => errors.map((error, index) => <p key={Math.random(index)}>{error.message}</p>);
 
   handleChange = event => {
     this.setState({
@@ -58,15 +67,30 @@ export default class Register extends Component {
     event.preventDefault();
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
-      DB.auth()
+      firebase
+        .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
           console.log(createdUser);
-          this.setState({ loading: false });
+          createdUser.user
+            .updateProfile({
+              displayName: this.state.username,
+              photoURL: `https://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+            })
+            .then(() => {
+              this.saveUser(createdUser).then(() => {
+                console.log("User saved");
+                this.setState({ errors: [], loading: false });
+              });
+            })
+            .catch(error => {
+              console.error(error);
+              this.setState({ errors: this.state.errors.concat(error) });
+            });
         })
-        .catch(err => {
-          console.error(err);
-          this.setState({ errors: this.state.errors.concat(err), loading: false });
+        .catch(error => {
+          console.error(error);
+          this.setState({ errors: this.state.errors.concat(error), loading: false });
         });
     }
   };
@@ -76,7 +100,7 @@ export default class Register extends Component {
     return (
       <Grid textAlign="center" verticalAlign="middle" className="app">
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" icon color="purple" textAlign="center">
+          <Header as="h1" icon color="purple" textAlign="center">
             <Icon name="puzzle piece" size="big" color="purple" />
             Register for DEVChat
           </Header>
