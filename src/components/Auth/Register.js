@@ -35,6 +35,7 @@ export default class Register extends Component {
       return true;
     }
   };
+  
   isPasswordValid = ({ password, passwordConfirmation }) => {
     if (password.length < 6 || passwordConfirmation.length < 6) {
       return false;
@@ -63,6 +64,7 @@ export default class Register extends Component {
       [event.target.name]: event.target.value
     });
   };
+
   handleSubmit = event => {
     event.preventDefault();
     if (this.isFormValid()) {
@@ -150,7 +152,7 @@ export default class Register extends Component {
                 type="password"
               />
               <Button disabled={loading} className={loading ? "loading" : ""} color="purple" fluid size="large">
-                Submit
+                Sign Up
               </Button>
             </Segment>
           </Form>
