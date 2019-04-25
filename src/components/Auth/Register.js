@@ -35,7 +35,7 @@ export default class Register extends Component {
       return true;
     }
   };
-  
+
   isPasswordValid = ({ password, passwordConfirmation }) => {
     if (password.length < 6 || passwordConfirmation.length < 6) {
       return false;
