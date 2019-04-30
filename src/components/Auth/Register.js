@@ -57,7 +57,9 @@ export default class Register extends Component {
     return errors.some(error => error.message.toLowerCase().includes(inputName)) ? "error" : "";
   };
 
-  displayErrors = errors => errors.map((error, index) => <p key={Math.random(index)}>{error.message}</p>);
+  displayErrors = errors => errors.map((error, index) => (
+    <p key={Math.random(index)}>{error.message}</p>
+  ));
 
   handleChange = event => {
     this.setState({
