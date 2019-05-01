@@ -43,17 +43,19 @@ const UserPanel = ({ currentUser }) => {
           </Header>
         </Grid.Row>
         {/* User Dropdown */}
-        <Header style={{ padding: "0.25em" }} as="h4" inverted>
-          <Dropdown
-            trigger={
-              <span>
-                <Image src={user.photoURL} spaced="right" avatar />
-                {user.displayName}
-              </span>
-            }
-            options={dropdownOptions}
-          />
-        </Header>
+        <Grid.Row style={{ margin: 0, padding: "1.2em" }}>
+          <Header style={{ padding: "0.25rem" }} as="h4" inverted>
+            <Dropdown
+              trigger={
+                <span>
+                  <Image src={user.photoURL} spaced="right" avatar />
+                  {user.displayName}
+                </span>
+              }
+              options={dropdownOptions}
+            />
+          </Header>
+        </Grid.Row>
       </Grid.Column>
     </Grid>
   );
