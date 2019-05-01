@@ -8,8 +8,8 @@ const Channels = () => {
       <Menu.Item>
         <span>
           <Icon name="exchange" /> CHANNELS
-        </span>{" "}
-        ({chanels.length})
+        </span>
+        ({chanels.length}) <Icon name="add" />
       </Menu.Item>
     </Menu.Menu>
   );
