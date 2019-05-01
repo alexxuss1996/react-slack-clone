@@ -11,7 +11,7 @@ import App from "./components/App";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import rootReducer from "./reducers";
-import { setUser } from "./actions";
+import { setUser, clearUser } from "./actions";
 
 const store = createStore(rootReducer, composeWithDevTools());
 
@@ -21,6 +21,9 @@ const Root = props => {
       if (user) {
         props.setUser(user);
         props.history.push("/");
+      } else {
+        props.history.push("/login");
+        props.clearUser();
       }
     });
   }, []);
@@ -43,7 +46,7 @@ const mapStateToProps = ({ user }) => ({
 const RootWithAuth = withRouter(
   connect(
     mapStateToProps,
-    { setUser }
+    { setUser, clearUser }
   )(Root)
 );
 
