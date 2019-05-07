@@ -6,7 +6,7 @@ import Channels from "./Channels";
 const SidePanel = ({ currentUser }) => (
   <Menu size="large" inverted vertical fixed="left" style={{ backgroundColor: "#4c3c4c", fontSize: "1.2rem" }}>
     <UserPanel currentUser={currentUser} />
-    <Channels />
+    <Channels currentUser={currentUser} />
   </Menu>
 );
 
