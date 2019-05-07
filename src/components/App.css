@@ -8,3 +8,18 @@ body,
 	overflow-x: hidden;
 	color: #fcfcfc;
 }
+
+.messages {
+	height: 350px;
+	overflow-y: scroll;
+}
+
+.message__form {
+	position: fixed !important;
+	bottom: 1em;
+	right: 1em;
+	left: 0;
+	margin-left: 320px !important;
+	z-index: 200;
+	
+}
