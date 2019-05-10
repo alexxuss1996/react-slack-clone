@@ -55,7 +55,7 @@ export default class MessageForm extends Component {
     }
   };
   render() {
-    const { errors } = this.state;
+    const { errors, loading, message } = this.state;
     return (
       <Segment className="message__form">
         <Input
@@ -64,12 +64,20 @@ export default class MessageForm extends Component {
           style={{ marginBottom: "0.7em" }}
           label={<Button icon={"add"} />}
           labelPosition="left"
+          value={message}
           onChange={this.handleChange}
           className={errors.some(error => error.message.includes("message")) ? "error" : ""}
           placeholder="Write your message"
         />
         <Button.Group icon widths="2">
-          <Button color="orange" content="Add Reply" labelPosition="left" onClick={this.sendMessage} icon="edit" />
+          <Button
+            color="orange"
+            content="Add Reply"
+            labelPosition="left"
+            disabled={loading}
+            onClick={this.sendMessage}
+            icon="edit"
+          />
           <Button color="teal" content="Upload Media" labelPosition="right" icon="cloud upload" />
         </Button.Group>
       </Segment>
