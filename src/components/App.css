@@ -21,5 +21,9 @@ body,
 	left: 0;
 	margin-left: 320px !important;
 	z-index: 200;
-	
+}
+
+.message__self {
+	padding-left: 8px;
+	border-left: 2px solid orange;
 }
