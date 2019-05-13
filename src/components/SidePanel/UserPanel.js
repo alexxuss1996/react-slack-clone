@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Grid, Header, Icon, Dropdown, Image } from "semantic-ui-react";
-import firebase from "../../firebase";
+import firebaseService from "../../firebase";
 
 const UserPanel = ({ currentUser }) => {
   const [user] = useState(currentUser);
   const handleSignOut = () => {
-    firebase
+    firebaseService
       .auth()
       .signOut()
       .then(() => {

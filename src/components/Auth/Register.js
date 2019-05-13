@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import md5 from "md5";
-import firebase from "../../firebase";
+import firebaseService from "../../firebase";
 
 export default class Register extends Component {
   state = {
@@ -12,7 +12,7 @@ export default class Register extends Component {
     passwordConfirmation: "",
     errors: [],
     loading: false,
-    usersRef: firebase.database().ref("users")
+    usersRef: firebaseService.database().ref("users")
   };
 
   isFormEmpty = ({ username, email, password, passwordConfirmation }) => {
@@ -69,7 +69,7 @@ export default class Register extends Component {
     event.preventDefault();
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
-      firebase
+      firebaseService
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
@@ -104,7 +104,7 @@ export default class Register extends Component {
         <Grid.Column style={{ maxWidth: 450 }}>
           <Header as="h1" icon color="purple" textAlign="center">
             <Icon name="puzzle piece" size="big" color="purple" />
-            Register for DEVChat
+            Register for DevChat
           </Header>
           <Form size="large" inverted onSubmit={this.handleSubmit}>
             <Segment stacked inverted>

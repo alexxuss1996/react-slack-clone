@@ -12,6 +12,6 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGE_SENDER_ID
 };
-const firebase = Firebase.initializeApp(firebaseConfig);
+const firebaseService = Firebase.initializeApp(firebaseConfig);
 
-export default firebase;
+export default firebaseService;

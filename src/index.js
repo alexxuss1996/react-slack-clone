@@ -5,7 +5,7 @@ import { Provider, connect } from "react-redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { BrowserRouter as Router, Route, Switch, withRouter } from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
-import firebase from "./firebase";
+import firebaseService from "./firebase";
 import Spinner from "./Spinner";
 import App from "./components/App";
 import Login from "./components/Auth/Login";
@@ -17,7 +17,7 @@ const store = createStore(rootReducer, composeWithDevTools());
 
 const Root = props => {
   useEffect(() => {
-    firebase.auth().onAuthStateChanged(user => {
+    firebaseService.auth().onAuthStateChanged(user => {
       if (user) {
         props.setUser(user);
         props.history.push("/");

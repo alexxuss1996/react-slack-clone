@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Segment, Comment } from "semantic-ui-react";
-import firebase from "../../firebase";
+import firebaseService from "../../firebase";
 import MessagesHeader from "./MessagesHeader";
 import MessageForm from "./MessageForm";
 import Message from "./Message";
 
 export default class Messages extends Component {
   state = {
-    messagesRef: firebase.database().ref("messages"),
+    messagesRef: firebaseService.database().ref("messages"),
     channel: this.props.currentChannel,
     user: this.props.currentUser,
     messages: [],
