@@ -7,6 +7,8 @@ import Message from "./Message";
 
 export default class Messages extends Component {
   state = {
+    privateChannel: this.props.isPrivateChannel,
+    privateMessagesRef: firebaseService.database().ref("privateMessages"),
     messagesRef: firebaseService.database().ref("messages"),
     channel: this.props.currentChannel,
     user: this.props.currentUser,
@@ -32,7 +34,8 @@ export default class Messages extends Component {
 
   addMessageListener = channelId => {
     let loadedMessages = [];
-    this.state.messagesRef.child(channelId).on("child_added", snap => {
+    const ref = this.getMessagesRef();
+    ref.child(channelId).on("child_added", snap => {
       loadedMessages.push(snap.val());
       this.setState({
         messages: loadedMessages,
@@ -54,6 +57,11 @@ export default class Messages extends Component {
     this.setState({
       numUniqueUsers
     });
+  };
+
+  getMessagesRef = () => {
+    const { privateChannel, privateMessagesRef, messagesRef } = this.state;
+    return privateChannel ? privateMessagesRef : messagesRef;
   };
 
   handleSearchChange = event => {
@@ -91,7 +99,9 @@ export default class Messages extends Component {
     }
   };
 
-  displayChannelName = channel => (channel ? `#${channel.name}` : "");
+  displayChannelName = channel => {
+    return channel ? `${this.state.privateChannel ? "@" : "#"}${channel.name}` : "";
+  };
 
   render() {
     const {
@@ -103,7 +113,8 @@ export default class Messages extends Component {
       numUniqueUsers,
       searchTerm,
       searchResults,
-      searchLoading
+      searchLoading,
+      privateChannel
     } = this.state;
     return (
       <>
@@ -112,6 +123,7 @@ export default class Messages extends Component {
           numUniqueUsers={numUniqueUsers}
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
+          isPrivateChannel={privateChannel}
         />
         <Segment className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>
@@ -123,6 +135,8 @@ export default class Messages extends Component {
           currentUser={user}
           currentChannel={channel}
           isProgressBarVisible={this.isProgressBarVisible}
+          isPrivateChannel={privateChannel}
+          getMessagesRef={this.getMessagesRef}
         />
       </>
     );
