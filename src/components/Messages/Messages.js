@@ -12,7 +12,8 @@ export default class Messages extends Component {
     user: this.props.currentUser,
     messages: [],
     messagesLoading: true,
-    progressBar: false
+    progressBar: false,
+    numUniqueUsers: ""
   };
 
   componentDidMount() {
@@ -34,6 +35,21 @@ export default class Messages extends Component {
         messages: loadedMessages,
         messagesLoading: false
       });
+      this.countUniqueUsers(loadedMessages);
+    });
+  };
+
+  countUniqueUsers = messages => {
+    const uniqueUsers = messages.reduce((acc, message) => {
+      if (!acc.includes(message.user.name)) {
+        acc.push(message.user.name);
+      }
+      return acc;
+    }, []);
+    const plural = uniqueUsers.length > 1 || uniqueUsers.length === 0;
+    const numUniqueUsers = `${uniqueUsers.length} user${plural ? "s" : ""}`;
+    this.setState({
+      numUniqueUsers
     });
   };
 
@@ -48,11 +64,14 @@ export default class Messages extends Component {
       });
     }
   };
+
+  displayChannelName = channel => (channel ? `#${channel.name}` : "");
+
   render() {
-    const { messagesRef, channel, messages, user, progressBar } = this.state;
+    const { messagesRef, channel, messages, user, progressBar, numUniqueUsers } = this.state;
     return (
       <>
-        <MessagesHeader />
+        <MessagesHeader channelName={this.displayChannelName(channel)} numUniqueUsers={numUniqueUsers} />
         <Segment className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>{this.displayMessages(messages)}</Comment.Group>
         </Segment>
