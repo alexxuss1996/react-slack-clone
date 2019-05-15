@@ -13,7 +13,10 @@ export default class Messages extends Component {
     messages: [],
     messagesLoading: true,
     progressBar: false,
-    numUniqueUsers: ""
+    numUniqueUsers: "",
+    searchTerm: "",
+    searchLoading: false,
+    searchResults: []
   };
 
   componentDidMount() {
@@ -53,6 +56,29 @@ export default class Messages extends Component {
     });
   };
 
+  handleSearchChange = event => {
+    this.setState(
+      {
+        searchTerm: event.target.value,
+        searchLoading: true
+      },
+      () => this.handleSearchMessages()
+    );
+  };
+
+  handleSearchMessages = () => {
+    const channelMessages = [...this.state.messages];
+    const regex = new RegExp(this.state.searchTerm, "gi");
+    const searchResults = channelMessages.reduce((acc, message) => {
+      if ((message.content && message.content.match(regex)) || message.user.name.match(regex)) {
+        acc.push(message);
+      }
+      return acc;
+    }, []);
+    this.setState({ searchResults });
+    setTimeout(() => this.setState({ searchLoading: false }), 1000);
+  };
+
   displayMessages = messages =>
     messages.length > 0 &&
     messages.map(message => <Message key={message.timestamp} message={message} user={this.state.user} />);
@@ -68,12 +94,29 @@ export default class Messages extends Component {
   displayChannelName = channel => (channel ? `#${channel.name}` : "");
 
   render() {
-    const { messagesRef, channel, messages, user, progressBar, numUniqueUsers } = this.state;
+    const {
+      messagesRef,
+      channel,
+      messages,
+      user,
+      progressBar,
+      numUniqueUsers,
+      searchTerm,
+      searchResults,
+      searchLoading
+    } = this.state;
     return (
       <>
-        <MessagesHeader channelName={this.displayChannelName(channel)} numUniqueUsers={numUniqueUsers} />
+        <MessagesHeader
+          channelName={this.displayChannelName(channel)}
+          numUniqueUsers={numUniqueUsers}
+          handleSearchChange={this.handleSearchChange}
+          searchLoading={searchLoading}
+        />
         <Segment className={progressBar ? "messages__progress" : "messages"}>
-          <Comment.Group>{this.displayMessages(messages)}</Comment.Group>
+          <Comment.Group>
+            {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
+          </Comment.Group>
         </Segment>
         <MessageForm
           messagesRef={messagesRef}
