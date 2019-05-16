@@ -15,20 +15,20 @@ import { setUser, clearUser } from "./actions";
 
 const store = createStore(rootReducer, composeWithDevTools());
 
-const Root = props => {
+const Root = ({ isLoading, setUser, clearUser, history }) => {
   useEffect(() => {
     firebaseService.auth().onAuthStateChanged(user => {
       if (user) {
-        props.setUser(user);
-        props.history.push("/");
+        setUser(user);
+        history.push("/");
       } else {
-        props.history.push("/login");
-        props.clearUser();
+        history.push("/login");
+        clearUser();
       }
     });
-  }, []);
+  }, [clearUser, history, setUser]);
 
-  return props.isLoading ? (
+  return isLoading ? (
     <Spinner />
   ) : (
     <Switch>
