@@ -149,7 +149,7 @@ export default class MessageForm extends Component {
   render() {
     const { errors, loading, message, modal, uploadState, percentUploaded } = this.state;
     return (
-      <Segment className="message__form">
+      <Segment inverted className="message__form">
         <Input
           fluid
           name="message"

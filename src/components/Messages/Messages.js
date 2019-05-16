@@ -125,7 +125,7 @@ export default class Messages extends Component {
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
         />
-        <Segment className={progressBar ? "messages__progress" : "messages"}>
+        <Segment inverted className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>
             {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
           </Comment.Group>

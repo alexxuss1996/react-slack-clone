@@ -16,13 +16,15 @@ const Message = ({ message, user }) => {
   return (
     <Comment>
       <Comment.Avatar src={message.user.avatar} />
-      <Comment.Content className={isOwnMessage(message, user)}>
-        <Comment.Author as="a">{message.user.name}</Comment.Author>
-        <Comment.Metadata>{timeFromNow(message.timestamp)}</Comment.Metadata>
+      <Comment.Content style={{ color: "#fcfcfc" }} className={isOwnMessage(message, user)}>
+        <Comment.Author style={{ color: "#ffffff" }} as="a">
+          {message.user.name}
+        </Comment.Author>
+        <Comment.Metadata style={{ color: "#f8f8f8" }}>{timeFromNow(message.timestamp)}</Comment.Metadata>
         {isImage(message) ? (
           <Image src={message.image} className="message__image" />
         ) : (
-          <Comment.Text>{message.content}</Comment.Text>
+          <Comment.Text style={{ color: "#f5f5f5" }}>{message.content}</Comment.Text>
         )}
       </Comment.Content>
     </Comment>
