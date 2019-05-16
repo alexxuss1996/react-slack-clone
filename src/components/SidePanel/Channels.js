@@ -180,7 +180,7 @@ class Channels extends Component {
   render() {
     const { channels, modal } = this.state;
     return (
-      <React.Fragment>
+      <>
         {/* Channels */}
         <Menu.Menu className="menu">
           <Menu.Item>
@@ -214,7 +214,7 @@ class Channels extends Component {
             </Button>
           </Modal.Actions>
         </Modal>
-      </React.Fragment>
+      </>
     );
   }
 }
