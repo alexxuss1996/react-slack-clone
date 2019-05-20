@@ -12,6 +12,8 @@ export default class Messages extends Component {
     messagesRef: firebaseService.database().ref("messages"),
     channel: this.props.currentChannel,
     user: this.props.currentUser,
+    usersRef: firebaseService.database().ref("users"),
+    isChannelStarred: false,
     messages: [],
     messagesLoading: true,
     progressBar: false,
@@ -25,6 +27,7 @@ export default class Messages extends Component {
     const { channel, user } = this.state;
     if (channel && user) {
       this.addListeners(channel.id);
+      this.addUserStarsListener(channel.id, user.uid)
     }
   }
 
@@ -45,6 +48,22 @@ export default class Messages extends Component {
     });
   };
 
+  addUserStarsListener = (channelId, userId) => {
+    this.state.usersRef
+      .child(userId)
+      .child("starred")
+      .once("value")
+      .then((data) => {
+        if(data.val() !== null) {
+          const channelIds = Object.keys(data.val());
+          const prevStarred = channelIds.includes(channelId);
+          this.setState({
+            isChannelStarred: prevStarred
+          })
+        }
+      })
+  }
+
   countUniqueUsers = messages => {
     const uniqueUsers = messages.reduce((acc, message) => {
       if (!acc.includes(message.user.name)) {
@@ -63,6 +82,39 @@ export default class Messages extends Component {
     const { privateChannel, privateMessagesRef, messagesRef } = this.state;
     return privateChannel ? privateMessagesRef : messagesRef;
   };
+
+  handleStar = () => {
+    this.setState(prevState => ({
+      isChannelStarred: !prevState.isChannelStarred
+    }), () => this.starChannel())
+  }
+
+  starChannel = () => {
+    const {isChannelStarred, channel, user, usersRef } = this.state;
+    if(isChannelStarred) {
+      usersRef
+        .child(`${user.uid}/starred`)
+        .update({
+          [channel.id]: {
+            name: channel.name,
+            details: channel.details,
+            createdBy : {
+              name: channel.createdBy.name,
+              avatar: channel.createdBy.avatar
+            }
+          }
+        })
+    } else {
+      usersRef
+        .child(`${user.uid}/starred`)
+        .child(channel.id)
+        .remove(err => {
+          if(err !== null) {
+            console.error(err);
+          }
+        })
+    }
+  }
 
   handleSearchChange = event => {
     this.setState(
@@ -107,6 +159,7 @@ export default class Messages extends Component {
     const {
       messagesRef,
       channel,
+      isChannelStarred,
       messages,
       user,
       progressBar,
@@ -124,6 +177,8 @@ export default class Messages extends Component {
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          handleStar={this.handleStar}
+          isChannelStarred={isChannelStarred}
         />
         <Segment inverted className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>
@@ -137,6 +192,7 @@ export default class Messages extends Component {
           isProgressBarVisible={this.isProgressBarVisible}
           isPrivateChannel={privateChannel}
           getMessagesRef={this.getMessagesRef}
+          
         />
       </>
     );
