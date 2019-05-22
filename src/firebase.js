@@ -4,6 +4,12 @@ import "firebase/database";
 import "firebase/storage";
 
 // Initialize Firebase
+/**
+ * @see https://firebase.google.com/docs/web/setup
+ */
+
+//  values from /.env.development.local
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
