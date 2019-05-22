@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Accordion, Icon, Header, Segment } from "semantic-ui-react";
+import { Accordion, Icon, Header, Segment, Image } from "semantic-ui-react";
 
 export default class MetaPanel extends Component {
   state = {
     privateChannel: this.props.isPrivateChannel,
+    channel: this.props.currentChannel,
     activeIndex: 0
   };
 
@@ -17,18 +18,19 @@ export default class MetaPanel extends Component {
   };
 
   render() {
-    const { activeIndex, privateChannel } = this.state;
+    const { activeIndex, privateChannel, channel } = this.state;
 
     if (privateChannel) {
       return null;
     }
 
     return (
-      <Segment inverted>
+      <Segment inverted loading={!channel}>
         <Header inverted as="h3" attached="top">
-          About # Channel
+          About # {channel && channel.name}
         </Header>
         <Accordion
+          fluid
           inverted
           style={{ border: "1px solid #eeeeee", borderRadius: "8px", margin: "10px 0", padding: "5px" }}
         >
@@ -42,7 +44,7 @@ export default class MetaPanel extends Component {
             <Icon name="info" />
             Channel Details
           </Accordion.Title>
-          <Accordion.Content active={activeIndex === 0}>details</Accordion.Content>
+          <Accordion.Content active={activeIndex === 0}>{channel && channel.details}</Accordion.Content>
 
           <Accordion.Title active={activeIndex === 1} index={1} onClick={this.setActiveIndex}>
             <Icon name="dropdown" />
@@ -56,7 +58,12 @@ export default class MetaPanel extends Component {
             <Icon name="pencil alternate" />
             Created By
           </Accordion.Title>
-          <Accordion.Content active={activeIndex === 2}>creator</Accordion.Content>
+          <Accordion.Content active={activeIndex === 2}>
+            <Header as="h3" inverted>
+              <Image circular src={channel && channel.createdBy.avatar} />
+              {channel && channel.createdBy.name}
+            </Header>
+          </Accordion.Content>
         </Accordion>
       </Segment>
     );
