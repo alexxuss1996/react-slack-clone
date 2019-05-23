@@ -73,7 +73,7 @@ export default class MessageForm extends Component {
           loading: true
         });
         getMessagesRef()
-          .child(user.uid)
+          .child(`${user.uid}/messages`)
           .push()
           .set(this.createMessage())
           .then(() => this.setState({ loading: false, message: "", errors: [] }))
