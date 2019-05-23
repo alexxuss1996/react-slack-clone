@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Accordion, Icon, Header, Segment, Image } from "semantic-ui-react";
+import { Accordion, Icon, Header, Segment, Image, List } from "semantic-ui-react";
 
 export default class MetaPanel extends Component {
   state = {
@@ -17,40 +17,55 @@ export default class MetaPanel extends Component {
     });
   };
 
+  formatCount = num => (num > 1 || num === 0 ? `${num} posts` : `${num} post`);
+
+  displayTopPosters = posts =>
+    // Convert post object in set of key-value arrays
+    Object.entries(posts)
+      // Sort Posts from greater count
+      .sort((a, b) => a[1] - b[1])
+      .map(([key, val], i) => (
+        <List.Item key={Math.random() * i}>
+          <Image circular src={val.avatar} />
+          <List.Content>
+            <List.Header as="a">{key}</List.Header>
+            <List.Description>{this.formatCount(val.count)}</List.Description>
+          </List.Content>
+        </List.Item>
+      ))
+      .slice(0, 5);
+
   render() {
     const { activeIndex, privateChannel, channel } = this.state;
+    const { userPosts } = this.props;
 
     if (privateChannel) {
       return null;
     }
 
     return (
-      <Segment inverted loading={!channel}>
-        <Header inverted as="h3" attached="top">
+      <Segment loading={!channel}>
+        <Header as="h3" attached="top">
           About # {channel && channel.name}
         </Header>
-        <Accordion
-          fluid
-          inverted
-          style={{ border: "1px solid #eeeeee", borderRadius: "8px", margin: "10px 0", padding: "5px" }}
-        >
-          <Accordion.Title
-            active={activeIndex === 0}
-            index={0}
-            onClick={this.setActiveIndex}
-          >
+        <Accordion styled>
+          <Accordion.Title active={activeIndex === 0} index={0} onClick={this.setActiveIndex}>
             <Icon name="dropdown" />
             <Icon name="info" />
             Channel Details
           </Accordion.Title>
-          <Accordion.Content active={activeIndex === 0}>{channel && channel.details}</Accordion.Content>
+          <Accordion.Content style={{ color: "#1B1C1D" }} active={activeIndex === 0}>
+            {channel && channel.details}
+          </Accordion.Content>
 
           <Accordion.Title active={activeIndex === 1} index={1} onClick={this.setActiveIndex}>
             <Icon name="dropdown" />
             <Icon name="user circle" />
             Top Posters
           </Accordion.Title>
-          <Accordion.Content active={activeIndex === 1}>posters</Accordion.Content>
+          <Accordion.Content active={activeIndex === 1}>
+            <List>{userPosts && this.displayTopPosters(userPosts)}</List>
+          </Accordion.Content>
 
           <Accordion.Title active={activeIndex === 2} index={2} onClick={this.setActiveIndex}>
             <Icon name="dropdown" />
@@ -58,7 +73,7 @@ export default class MetaPanel extends Component {
             Created By
           </Accordion.Title>
           <Accordion.Content active={activeIndex === 2}>
-            <Header as="h3" inverted>
+            <Header as="h3">
               <Image circular src={channel && channel.createdBy.avatar} />
               {channel && channel.createdBy.name}
             </Header>
