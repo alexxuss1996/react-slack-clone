@@ -35,7 +35,6 @@ export default class MetaPanel extends Component {
           style={{ border: "1px solid #eeeeee", borderRadius: "8px", margin: "10px 0", padding: "5px" }}
         >
           <Accordion.Title
-            className="Accordion_title"
             active={activeIndex === 0}
             index={0}
             onClick={this.setActiveIndex}

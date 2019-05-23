@@ -52,21 +52,37 @@ export default class MessageForm extends Component {
 
   sendMessage = () => {
     const { getMessagesRef } = this.props;
-    const { message, channel, errors } = this.state;
+    const { message, channel, errors, user} = this.state;
 
     if (message) {
-      this.setState({
-        loading: true
-      });
-      getMessagesRef()
-        .child(channel.id)
-        .push()
-        .set(this.createMessage())
-        .then(() => this.setState({ loading: false, message: "", errors: [] }))
-        .catch(err => {
-          console.error(err);
-          this.setState({ loading: false, errors: errors.concat(err) });
+      if(channel) {
+        this.setState({
+          loading: true
         });
+        getMessagesRef()
+          .child(channel.id)
+          .push()
+          .set(this.createMessage())
+          .then(() => this.setState({ loading: false, message: "", errors: [] }))
+          .catch(err => {
+            console.error(err);
+            this.setState({ loading: false, errors: errors.concat(err) });
+          });
+      } else {
+        this.setState({
+          loading: true
+        });
+        getMessagesRef()
+          .child(user.uid)
+          .push()
+          .set(this.createMessage())
+          .then(() => this.setState({ loading: false, message: "", errors: [] }))
+          .catch(err => {
+            console.error(err);
+            this.setState({ loading: false, errors: errors.concat(err) });
+          });
+      }
+
     } else {
       this.setState({
         errors: errors.concat({ message: "Add a message" })
