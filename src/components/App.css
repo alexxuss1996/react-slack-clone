@@ -63,3 +63,7 @@ body,
 	height: 35px;
 	transform: rotate(225deg);
 }
+
+.color__label {
+	margin-bottom: 10px !important;
+}
