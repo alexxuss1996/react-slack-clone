@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Grid, Header, Icon, Dropdown, Image } from "semantic-ui-react";
 import firebaseService from "../../firebase";
 
-const UserPanel = ({ currentUser }) => {
+const UserPanel = ({ currentUser, primaryColor }) => {
   const [user] = useState(currentUser);
   const handleSignOut = () => {
     firebaseService
@@ -33,7 +33,7 @@ const UserPanel = ({ currentUser }) => {
   ];
 
   return (
-    <Grid>
+    <Grid style={{ backgroundColor: primaryColor }}>
       <Grid.Column>
         <Grid.Row style={{ margin: 0, padding: "1.2em" }}>
           {/* App Header */}
