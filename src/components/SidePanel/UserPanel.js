@@ -49,7 +49,7 @@ const UserPanel = ({ currentUser, primaryColor }) => {
           </Header>
         </Grid.Row>
         {/* User Dropdown */}
-        <Grid.Row style={{ margin: 0, padding: "1.2em", backgroundColor: primaryColor }}>
+        <Grid.Row style={{ margin: 0, padding: "1.2em" }}>
           <Header style={{ padding: "0.25rem" }} as="h4" inverted>
             <Dropdown
               trigger={
