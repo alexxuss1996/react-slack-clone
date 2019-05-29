@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { setUserPosts } from "../../actions"
+import { setUserPosts } from "../../actions";
 import { Segment, Comment } from "semantic-ui-react";
 import firebaseService from "../../firebase";
 import MessagesHeader from "./MessagesHeader";
@@ -8,17 +8,20 @@ import MessageForm from "./MessageForm";
 import Message from "./Message";
 import Typing from "./Typing";
 
- class Messages extends Component {
+class Messages extends Component {
   state = {
     privateChannel: this.props.isPrivateChannel,
     privateMessagesRef: firebaseService.database().ref("privateMessages"),
     messagesRef: firebaseService.database().ref("messages"),
     usersRef: firebaseService.database().ref("users"),
+    typingRef: firebaseService.database().ref("typing"),
+    connectedRef: firebaseService.database().ref(".info/connected"),
     channel: this.props.currentChannel,
     user: this.props.currentUser,
     isChannelStarred: false,
     messages: [],
     messagesLoading: true,
+    typingUsers: [],
     progressBar: false,
     numUniqueUsers: "",
     searchTerm: "",
@@ -34,8 +37,45 @@ import Typing from "./Typing";
     }
   }
 
+  addTypingListeners = channelId => {
+    const { typingRef, connectedRef, user } = this.state;
+    let typingUsers = [];
+    typingRef.child(channelId).on("child_added", snap => {
+      if (snap.key !== this.state.user.uid) {
+        typingUsers = typingUsers.concat({
+          id: snap.key,
+          name: snap.val()
+        });
+        this.setState({ typingUsers });
+      }
+    });
+
+    typingRef.child(channelId).on("child_removed", snap => {
+      const index = typingUsers.findIndex(user => user.id === snap.key);
+      if (index !== -1) {
+        typingUsers = typingUsers.filter(user => user.id !== snap.key);
+        this.setState({ typingUsers });
+      }
+    });
+
+    connectedRef.on("value", snap => {
+      if (snap.val() === true) {
+        typingRef
+          .child(channelId)
+          .child(user.uid)
+          .onDisconnect()
+          .remove(err => {
+            if (err !== null) {
+              console.error(err);
+            }
+          });
+      }
+    });
+  };
+
   addListeners = channelId => {
     this.addMessageListener(channelId);
+    this.addTypingListeners(channelId);
   };
 
   addMessageListener = channelId => {
@@ -48,7 +88,7 @@ import Typing from "./Typing";
         messagesLoading: false
       });
       this.countUniqueUsers(loadedMessages);
-      this.countUserPosts(loadedMessages)
+      this.countUserPosts(loadedMessages);
     });
   };
 
@@ -84,18 +124,18 @@ import Typing from "./Typing";
 
   countUserPosts = messages => {
     let userPosts = messages.reduce((acc, message) => {
-      if(message.user.name in acc) {
+      if (message.user.name in acc) {
         acc[message.user.name].count += 1;
       } else {
         acc[message.user.name] = {
           avatar: message.user.avatar,
           count: 1
-        }
+        };
       }
       return acc;
-    }, {})
-    this.props.setUserPosts(userPosts)
-  }
+    }, {});
+    this.props.setUserPosts(userPosts);
+  };
 
   getMessagesRef = () => {
     const { privateChannel, privateMessagesRef, messagesRef } = this.state;
@@ -175,6 +215,16 @@ import Typing from "./Typing";
     return channel ? `${this.state.privateChannel ? "@" : "#"}${channel.name}` : "";
   };
 
+  displayTypingUsers = users => {
+    users.length > 0 &&
+      users.map(user => (
+        <div key={user.id} style={{ display: "flex", alignItems: "center", marginBottom: "0.2em" }}>
+          <span className="user__typing">{user.name} is typing</span>
+          <Typing />
+        </div>
+      ));
+  };
+
   render() {
     const {
       messagesRef,
@@ -187,7 +237,8 @@ import Typing from "./Typing";
       searchTerm,
       searchResults,
       searchLoading,
-      privateChannel
+      privateChannel,
+      typingUsers
     } = this.state;
     return (
       <>
@@ -203,10 +254,7 @@ import Typing from "./Typing";
         <Segment inverted className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>
             {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
-            <div style={{display: "flex", alignItems: "center"}} >
-              <span className="user__typing">fred is typing</span>
-              <Typing/>
-            </div>
+            {this.displayTypingUsers(typingUsers)}
           </Comment.Group>
         </Segment>
         <MessageForm
@@ -222,4 +270,7 @@ import Typing from "./Typing";
   }
 }
 
-export default connect(null, { setUserPosts })(Messages);
+export default connect(
+  null,
+  { setUserPosts }
+)(Messages);
