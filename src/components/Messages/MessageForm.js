@@ -12,6 +12,7 @@ export default class MessageForm extends Component {
     uploadState: "",
     uploadTask: null,
     storageRef: firebaseService.storage().ref(),
+    typingRef: firebaseService.database().ref("typing"),
     message: "",
     channel: this.props.currentChannel,
     user: this.props.currentUser,
@@ -25,6 +26,21 @@ export default class MessageForm extends Component {
     this.setState({
       [event.target.name]: event.target.value
     });
+  };
+
+  handleKeyDown = () => {
+    const { message, typingRef, user, channel } = this.state;
+    if (message) {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .set(user.displayName);
+    } else {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .remove();
+    }
   };
 
   openModal = () => this.setState({ modal: true });
@@ -52,10 +68,10 @@ export default class MessageForm extends Component {
 
   sendMessage = () => {
     const { getMessagesRef } = this.props;
-    const { message, channel, errors, user} = this.state;
+    const { message, channel, errors, user, typingRef } = this.state;
 
     if (message) {
-      if(channel) {
+      if (channel) {
         this.setState({
           loading: true
         });
@@ -63,7 +79,13 @@ export default class MessageForm extends Component {
           .child(channel.id)
           .push()
           .set(this.createMessage())
-          .then(() => this.setState({ loading: false, message: "", errors: [] }))
+          .then(() => {
+            this.setState({ loading: false, message: "", errors: [] });
+            typingRef
+              .child(channel.id)
+              .child(user.uid)
+              .remove();
+          })
           .catch(err => {
             console.error(err);
             this.setState({ loading: false, errors: errors.concat(err) });
@@ -76,13 +98,18 @@ export default class MessageForm extends Component {
           .child(`${user.uid}/messages`)
           .push()
           .set(this.createMessage())
-          .then(() => this.setState({ loading: false, message: "", errors: [] }))
+          .then(() => {
+            this.setState({ loading: false, message: "", errors: [] });
+            typingRef
+              .child(channel.id)
+              .child(user.uid)
+              .remove();
+          })
           .catch(err => {
             console.error(err);
             this.setState({ loading: false, errors: errors.concat(err) });
           });
       }
-
     } else {
       this.setState({
         errors: errors.concat({ message: "Add a message" })
@@ -169,6 +196,7 @@ export default class MessageForm extends Component {
         <Input
           fluid
           name="message"
+          onKeyDown={this.handleKeyDown}
           style={{ marginBottom: "0.7em" }}
           label={<Button icon={"add"} />}
           labelPosition="left"
