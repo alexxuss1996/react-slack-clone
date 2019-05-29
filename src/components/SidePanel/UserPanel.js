@@ -1,16 +1,51 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Grid, Header, Icon, Dropdown, Image, Modal, Input, Button } from "semantic-ui-react";
 import firebaseService from "../../firebase";
 import AvatarEditor from "react-avatar-editor";
 
 const UserPanel = ({ currentUser, primaryColor }) => {
   const [user] = useState(currentUser);
+  const [storageRef] = useState(firebaseService.storage().ref());
+  const [userRef] = useState(firebaseService.auth().currentUser);
+  const [usersRef] = useState(firebaseService.database().ref("users"));
+  const [metadata] = useState({
+    contentType: "image/jpeg"
+  });
   const [modal, setModal] = useState(false);
-  const [isFileUpload, setIsFileUpload] = useState(false)
+  const [isFileUpload, setIsFileUpload] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [croppedImage, setCroppedImage] = useState("");
+  const [uploadedCroppedImage, setUploadedCroppedImage] = useState("");
   const [blob, setBlob] = useState("");
   const avatarEditor = useRef(null);
+
+  useEffect(() => {
+    const changeAvatar = () => {
+      userRef
+        .updateProfile({
+          photoURL: uploadedCroppedImage
+        })
+        .then(() => {
+          console.log("photoURL updated");
+          closeModal();
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
+      usersRef
+        .child(user.uid)
+        .update({
+          avatar: uploadedCroppedImage
+        })
+        .then(console.log("User avatar updated!"))
+        .catch(err => console.error(err));
+    };
+
+    if (uploadedCroppedImage) {
+      changeAvatar();
+    }
+  }, [uploadedCroppedImage, user.uid, userRef, usersRef]);
 
   const handleSignOut = () => {
     firebaseService
@@ -29,6 +64,17 @@ const UserPanel = ({ currentUser, primaryColor }) => {
         setBlob(blob);
       });
     }
+  };
+
+  const uploadCroppedImage = () => {
+    storageRef
+      .child(`avatars/user-${userRef.uid}`)
+      .put(blob, metadata)
+      .then(snap => {
+        snap.ref.getDownloadURL().then(downloadUrl => {
+          setUploadedCroppedImage(downloadUrl);
+        });
+      });
   };
 
   const handleChange = event => {
@@ -118,7 +164,7 @@ const UserPanel = ({ currentUser, primaryColor }) => {
           </Modal.Content>
           <Modal.Actions>
             {croppedImage && (
-              <Button color="green" inverted>
+              <Button color="green" inverted onClick={uploadCroppedImage}>
                 <Icon name="save" /> Change Avatar
               </Button>
             )}
