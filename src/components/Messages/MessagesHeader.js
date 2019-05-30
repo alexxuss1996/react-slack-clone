@@ -23,7 +23,7 @@ export default class MessagesHeader extends Component {
                 onClick={handleStar}
                 name={isChannelStarred ? "star" : "star outline"}
                 color={isChannelStarred ? "yellow" : "olive"}
-                style={{ marginLeft: "5px" }}
+                style={{ marginLeft: "5px", cursor: "pointer" }}
               />
             )}
           </span>
