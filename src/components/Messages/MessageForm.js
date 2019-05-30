@@ -30,7 +30,10 @@ export default class MessageForm extends Component {
     });
   };
 
-  handleKeyDown = () => {
+  handleKeyDown = event => {
+    if(event.ctrlKey && event.keyCode === 13) {
+      this.sendMessage();
+    }
     const { message, typingRef, user, channel } = this.state;
     if (message) {
       typingRef
