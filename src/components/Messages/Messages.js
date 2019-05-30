@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { setUserPosts } from "../../actions";
@@ -7,6 +8,7 @@ import MessagesHeader from "./MessagesHeader";
 import MessageForm from "./MessageForm";
 import Message from "./Message";
 import Typing from "./Typing";
+import Skeleton from "./Skeleton";
 
 class Messages extends Component {
   state = {
@@ -235,6 +237,15 @@ class Messages extends Component {
       ));
   };
 
+  displayMessagesSkeleton = loading =>
+    loading ? (
+      <React.Fragment>
+        {[...Array(10)].map((_, i) => (
+          <Skeleton key={i} />
+        ))}
+      </React.Fragment>
+    ) : null;
+
   render() {
     const {
       messagesRef,
@@ -248,7 +259,8 @@ class Messages extends Component {
       searchResults,
       searchLoading,
       privateChannel,
-      typingUsers
+      typingUsers,
+      messagesLoading
     } = this.state;
     return (
       <>
@@ -263,6 +275,7 @@ class Messages extends Component {
         />
         <Segment inverted className={progressBar ? "messages__progress" : "messages"}>
           <Comment.Group>
+            {this.displayMessagesSkeleton(messagesLoading)}
             {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
             {this.displayTypingUsers(typingUsers)}
             <div ref={node => (this.messagesEnd = node)} />
