@@ -37,6 +37,16 @@ class Messages extends Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.messagesEnd) {
+      this.scrollToBottom();
+    }
+  }
+
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+  };
+
   addTypingListeners = channelId => {
     const { typingRef, connectedRef, user } = this.state;
     let typingUsers = [];
@@ -255,6 +265,7 @@ class Messages extends Component {
           <Comment.Group>
             {searchTerm ? this.displayMessages(searchResults) : this.displayMessages(messages)}
             {this.displayTypingUsers(typingUsers)}
+            <div ref={node => (this.messagesEnd = node)} />
           </Comment.Group>
         </Segment>
         <MessageForm
