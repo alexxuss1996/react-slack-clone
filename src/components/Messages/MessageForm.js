@@ -24,6 +24,15 @@ export default class MessageForm extends Component {
     emojiPicker: false
   };
 
+  componentWillUnmount() {
+    if (this.state.uploadTask !== null) {
+      this.state.uploadTask.cancel();
+      this.setState({
+        uploadTask: null
+      });
+    }
+  }
+
   handleChange = event => {
     this.setState({
       [event.target.name]: event.target.value
@@ -31,7 +40,7 @@ export default class MessageForm extends Component {
   };
 
   handleKeyDown = event => {
-    if(event.ctrlKey && event.keyCode === 13) {
+    if (event.ctrlKey && event.keyCode === 13) {
       this.sendMessage();
     }
     const { message, typingRef, user, channel } = this.state;
